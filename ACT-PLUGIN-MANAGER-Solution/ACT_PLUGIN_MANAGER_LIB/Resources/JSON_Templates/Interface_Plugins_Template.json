@@ -5,6 +5,7 @@
       {
          "interface": "IVolt.Interfaces.I_HitSomething",
          "dll_name": "customplugins.dll",
+         "class_name": "MyPlugins.Player.My_IHitSomething",
          "version_increment": 20,
          "plugin_name": "",
          "specific_path": "",
@@ -13,9 +14,12 @@
          "replace_core_code": false,
          "arguments": [ "###APPLICATION_NAME###", "###FRAMEWORK###", "Mark Alicz" ],
          "depends_on": [
-            { "interface": "IVolt.Interfaces.I_HitSomething" },
-            { "dll_name": "customplugins.dll" },
-            { "version_increment_min": 16 }
+            {
+               "interface": "IVolt.Interfaces.I_Targeted_Something",
+               "dll_name": "customplugins.dll",
+               "class_name": "MyPlugins.Player.My_ITargetedSomething",
+               "version_increment_min": 12
+            }
          ],
          "enabled": false
       }

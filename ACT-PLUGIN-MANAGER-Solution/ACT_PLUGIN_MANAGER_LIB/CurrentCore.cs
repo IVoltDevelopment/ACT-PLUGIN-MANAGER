@@ -36,292 +36,8 @@ namespace ACT.Core.PluginManager
 
 	public static class CurrentCore<T>
 	{
-		#region Private Variables - Properties
 
 
-		/// <summary>	The local cached assemblies. </summary>
-		static List<I_Cached_Assembly> _local_cached_assemblies;
-		/// <summary>	Cached assemblies for the application. </summary>
-		static List<I_Cached_Assembly> _cached_assemblies;
-
-		/// <summary>	True to loaded application plugin data. </summary>
-		static bool _loaded_Application_Plugin_Data;
-		/// <summary>	True to supported interfaces. </summary>
-		static bool _loaded_Supported_Interfaces_Data;
-
-		
-
-		/// <summary>	Private List of Plugin Directories Defined. </summary>
-		static List<string> _PluginDirectories = new List<string>();
-
-		/// <summary>	The exceptions caught. </summary>
-		static Dictionary<string, Exception> _ExceptionsCaught = new Dictionary<string, Exception>();
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Gets or sets a value indicating whether the initilized. </summary>
-		///
-		/// <value>	True if initilized, false if not. </value>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static bool INITILIZED { get; internal set; } = false;
-
-		/// <summary>	True to ignore local plugins. </summary>
-		internal static bool IgnoreLocalPlugins = true;
-		#endregion
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Initalizes this object. </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/24/2024. </remarks>
-		///
-		/// <exception cref="Exception">	Thrown when an exception error condition occurs. </exception>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		public static void Initalize() 
-		{
-			#region Local Plugins
-
-			// LOAD THE LOCAL SUPPORTED INTERFACES	  		
-			try
-			{
-				string _SuportedInterfacesPath = (__.LocalPluginsDirectory.EnsureDirectoryFormat() + "Local_Suported_Interfaces.json");
-				if (_SuportedInterfacesPath.FileExists()) { __._Local_Supported_Interfaces = Supported_Interfaces.FromJson(System.IO.File.ReadAllText(_SuportedInterfacesPath)); }
-
-				string _PluginsPath = (__.LocalPluginsDirectory.EnsureDirectoryFormat() + "Local_Plugins.json");
-				if (_PluginsPath.FileExists()) { __._Local_Plugins = Application_Plugins.FromJson(System.IO.File.ReadAllText(_PluginsPath)); }
-
-				if (__._Local_Supported_Interfaces == null || __._Local_Supported_Interfaces.InterfaceSources.Count > 0)
-				{
-					if (__._Local_Plugins == null || __._Local_Plugins.InterfacePluginDlls.Count > 0)
-					{
-						foreach (var plug in __._Local_Plugins.InterfacePluginDlls)
-						{
-							if (__._Local_Supported_Interfaces.Has_Plugin_For_Interface(plug.Interface, true)) { plug.SpecificPath = __.PluginsDirectory.EnsureDirectoryFormat() + plug.DllName; IgnoreLocalPlugins = false; }
-						}
-					}
-				}
-			}
-			catch { }
-
-			#endregion
-
-			#region Application Plugins
-
-			// LOAD THE APPLICATION INTERFACES AND PLUGINS	  		
-			try
-			{
-				string _SuportedInterfacesPath = (__.PluginsDirectory.EnsureDirectoryFormat() + "Suported_Interfaces.json");
-				if (_SuportedInterfacesPath.FileExists()) { __._Local_Supported_Interfaces = Supported_Interfaces.FromJson(System.IO.File.ReadAllText(_SuportedInterfacesPath)); }
-				else { throw new Exception("Missing Supported Interfaces File: " + _SuportedInterfacesPath); }
-
-				string _PluginsPath = (__.PluginsDirectory.EnsureDirectoryFormat() + "Application_Plugins.json");
-				if (_PluginsPath.FileExists()) { __._Local_Plugins = Application_Plugins.FromJson(System.IO.File.ReadAllText(_PluginsPath)); }
-				else { throw new Exception("Missing Application Plugins File: " + _PluginsPath); }
-
-				if (__._Supported_Interfaces == null || __._Supported_Interfaces.InterfaceSources.Count > 0)
-				{
-					if (__._Application_Plugins == null || __._Application_Plugins.InterfacePluginDlls.Count > 0)
-					{
-						foreach (var plug in __._Application_Plugins.InterfacePluginDlls)
-						{
-							if (__._Supported_Interfaces.Has_Plugin_For_Interface(plug.Interface, true)) { plug.SpecificPath = __.PluginsDirectory.EnsureDirectoryFormat() + plug.DllName; plug.ValidPlugin = true; }
-						}
-					}
-				}
-			}
-			catch { }
-
-			#endregion
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Gets or sets the cached assemblies. </summary>
-		///
-		/// <value>	The cached assemblies. </value>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static List<I_Cached_Assembly> CachedAssemblies { get { return _cached_assemblies; } set { _cached_assemblies = value; } }
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Gets or sets the local - internal - cached assemblies. </summary>
-		///
-		/// <value>	The cached assemblies. </value>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		internal static List<I_Cached_Assembly> LocalCachedAssemblies { get { return _local_cached_assemblies; } set { _local_cached_assemblies = value; } }
-
-
-
-
-
-		#region Public Exception Tracking Methods
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Gets a value indicating whether this object has caught exceptions. </summary>
-		///
-		/// <value>	True if this object has caught exceptions, false if not. </value>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static bool HasCaughtExceptions { get { return _ExceptionsCaught.Any(); } }
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Caught exceptions. </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/23/2024. </remarks>
-		///
-		/// <param name="clearExceptions">	True to clear exceptions. </param>
-		///
-		/// <returns>	True if it succeeds, false if it fails. </returns>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static Dictionary<string, Exception> GetAllCaughtExceptions(bool clearExceptions)
-		{
-
-			var _TmpReturn = new Dictionary<string, Exception>(_ExceptionsCaught);
-
-			if (clearExceptions) { _ExceptionsCaught.Clear(); }
-
-			return _TmpReturn;
-		}
-		#endregion
-
-		#region Loading Plugins - Local and Normal
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Loads all plugins. </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/24/2024. </remarks>
-		///
-		/// <exception cref="DirectoryNotFoundException">	Thrown when the requested directory is not
-		/// 																present. </exception>
-		///
-		/// <param name="PluginPathBaseDirectory">	Pathname of the plugin path base directory. </param>
-		/// <param name="LocalPlugins">					True to local plugins. </param>
-		///
-		/// <returns>	all plugins. </returns>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		private int LoadAllPlugins(string PluginPathBaseDirectory, bool LocalPlugins)
-		{
-			if (PluginPathBaseDirectory.DirectoryExists() == false) { throw new DirectoryNotFoundException("Unable To Locate:" + PluginPathBaseDirectory); }
-		
-			var _AllFiles = Directory.GetFiles(PluginPathBaseDirectory);
-			var _AllPlugins = _AllFiles.Where(x => x.ToLower().EndsWith(".dll")).ToList();
-
-			foreach (var _Plugin in  __._Application_Plugins.InterfacePluginDlls)//_AllPlugins.Where(x => File.Exists(x) == true).Select(x => x))
-			{
-				try
-				{
-
-					if (__._Supported_Interfaces.Has_Plugin_For_Interface(_Plugin.Interface, false))
-					{
-						Assembly_Loader _AH = new Assembly_Loader();
-						var _CA = _AH.Load_From_FilePath(_Plugin.SpecificPath);
-						if (_CA.Assembly_Types.Count() == 0) { continue; }
-						if (LocalPlugins)
-						{
-							AddCachedAssembly(_CA, true);
-						}
-						else
-						{
-							AddCachedAssembly(_CA);
-						}
-					}
-					
-
-					
-				}
-				catch (Exception ex) { _ExceptionsCaught.Add(Guid.NewGuid().ToString() + " - Error Adding Plugins From " + PluginPath, ex); __.LogFatalError("CurrentCore<" + typeof(T).ToString() + ">()...LoadAllPlugins...	On::" + PluginPath, ex); }
-			}
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	List of Plugin Directories Defined. </summary>
-		///
-		/// <value>	The get plugin directories. </value>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static List<string> GetPluginDirectories
-		{
-			get
-			{
-				// IF NO Plugin Directories Are Defined and Saved -- Load Known Plugins
-				if (!_PluginDirectories.Any()) { LoadAllKnownPaths(); }
-
-				return _PluginDirectories;
-			}
-		}
-
-		#endregion
-
-		#region Local Plugins
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Loads local plugins. </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/23/2024. </remarks>
-		///
-		/// <param name="PluginPath">	Full pathname of the plugin file. </param>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		internal static void LoadLocalPlugins(string PluginPath)
-		{
-			//_local_cached_assemblies
-		}
-
-		
-		#endregion Local Plugin Methods
-
-		#region Public Methods
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>
-		/// Adds Cached Assembly.  Can be added post Load. calls <seealso cref="AddCachedAssembly(I_Cached_Assembly, bool)"/>
-		/// </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/19/2024. </remarks>
-		///
-		/// <param name="AssemblyTooAdd">	The assembly too add. </param>
-		///
-		/// <returns>	Null if AssemblyToAdd is Null, True if Added, False if Not Added. </returns>
-		///
-		/// ### <exception cref="ArgumentNullException">	Thrown when one or more required arguments are
-		/// 																null. </exception>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static bool AddCachedAssembly(I_Cached_Assembly AssemblyTooAdd)
-		{
-			return AddCachedAssembly(AssemblyTooAdd, false);
-		}
-
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Checks and Finds Cached Type. </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/11/2024. </remarks>
-		///
-		/// <param name="DllType">			Type of Cached DLL. </param>
-		/// <param name="DllFullPath">	(Optional) Full Path to DLL or Blank if Not Needed. </param>
-		///
-		/// <returns>	CachedTypeID or Null. </returns>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-
-		public static Guid? FindCachedAssembly(Type DllType, string DllFullPath = "")
-		{
-			if (CachedAssemblies.Any() == false) { return null; }
-
-			var _AllFoundTypes = CachedAssemblies.Where(x => x.Assembly_Types.Contains(DllType)).ToList();
-
-
-			if (CachedAssemblies.Select(x =>
-									 x.Assembly_Types.Contains(DllType) &&
-									 (x.Full_PluginDLL_Path == DllFullPath || DllFullPath.NullOrEmpty()))
-								 .Count() > 1)
-			{
-				__.LogBasicInfo("Cached Assemblies Contain Multiple Type Defined Plugins: " + DllType.FullName);
-			}
-
-			// Returns the First One.  Logs When there are more than one tyoe.
-			return CachedAssemblies.Where(x => x.Assembly_Types.Contains(DllType) && (x.Full_PluginDLL_Path == DllFullPath || DllFullPath.NullOrEmpty())).OrderByDescending(y => y.DateLoaded).First().Assembly_CacheID;
-		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>	Gets local plugins. </summary>
@@ -330,25 +46,26 @@ namespace ACT.Core.PluginManager
 		///
 		/// <returns>	The local plugins. </returns>
 		////////////////////////////////////////////////////////////////////////////////////////////////////
-
 		internal static T GetLocalPlugin()
 		{
-			if (_local_cached_assemblies == null || _local_cached_assemblies.Count() == 0)
+			if (__._local_cached_assemblies == null || __._local_cached_assemblies.Count() == 0)
 			{
 				LoadLocalPlugins(__.ResourceDirectory.EnsureDirectoryFormat() + "LocalPlugins\\");
 			}
 
-			if (_local_cached_assemblies.First(x => x.Assembly_Types.Contains(typeof(T))) == null)
+			if (__._local_cached_assemblies.First(x => x.Assembly_Types.Contains(typeof(T))) == null)
 			{
 				if (typeof(T) == typeof(I_Cached_Assembly))
 				{
-					return (T)LocalCachedAssemblies.First(x => x.Assembly_Types.Contains(typeof(T)));
+					return (T)__.LocalCachedAssemblies.First(x => x.Assembly_Types.Contains(typeof(T)));
 				}
-				else if (typeof(T) == typeof(I_Cached_Assembly))
+				else if (typeof(T) == typeof(I_Assembly_Loader))
 				{
-
+					return (T)__.LocalCachedAssemblies.First(x => x.Assembly_Types.Contains(typeof(T)));
 				}
 			}
+
+			return default(T);
 		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -363,26 +80,38 @@ namespace ACT.Core.PluginManager
 		///
 		/// <returns>	T. </returns>
 		////////////////////////////////////////////////////////////////////////////////////////////////////
-
 		public static T GetCurrent()
 		{
 			// Check For Cached Class
-			if (_CachedClasses.ContainsKey(typeof(T)))
+			if (__._CachedClasses.ContainsKey(typeof(T)))
 			{
-				if (_CachedClasses[typeof(T)] == null) { _CachedClasses.Remove(typeof(T)); }
-				else { return (T)_CachedClasses[typeof(T)]; }
+				if (__._CachedClasses[typeof(T)] == null) { __._CachedClasses.Remove(typeof(T)); }
+				else { return (T)__._CachedClasses[typeof(T)]; }
 			}
-
-			var _PluginInfo = new Plugin_Arguments(typeof(T).FullName);
 
 			global::System.Reflection.Assembly _A;
 			object _TmpClass;
 
-			Guid? _CachedAssemblyID = FindCachedAssembly(typeof(T));
+			Dictionary<I_Cached_Assembly, List<Type>> AvailablePlugins = __.GetAllPlugins<T>();
 
-			if (_CachedAssemblyID != null)
+
+			if (AvailablePlugins != null)
 			{
-				_A = Cached_Assemblies.First(x => x.Assembly_CacheID == _CachedAssemblyID).Loaded_Assembly;
+				foreach (var plugin in AvailablePlugins)
+				{
+					if (__.CachedAssemblies.Any(x => x.Full_PluginDLL_Path == plugin.Key.Full_PluginDLL_Path))
+					{
+						var _tmpAssCach = __.CachedAssemblies.First(x => x..Full_PluginDLL_Path == plugin.Key.Full_PluginDLL_Path);
+						foreach(var _tmpType.
+						if (__.CachedAssemblies.First(x => x.Full_PluginDLL_Path == plugin.Key.Full_PluginDLL_Path).Loaded_Assembly == null)
+						{
+							__.CachedAssemblies.First(x => x.Full_PluginDLL_Path == plugin.Key.Full_PluginDLL_Path).Loaded_Assembly = Assembly.LoadFile(plugin.Key.Full_PluginDLL_Path);
+						}
+					}
+				}
+
+
+				if (__.CachedAssemblies.Any(x => AvailablePlugins.Keys.SelectMany(x => x.Full_PluginDLL_Path == x.Full_PluginDLL_Path)    // Cached_Assemblies.First(x => x.Assembly_CacheID == _CachedAssemblyID).Loaded_Assembly;
 				_TmpClass = _A.CreateInstance(_PluginInfo.FullClassName, true,
 					global::System.Reflection.BindingFlags.CreateInstance, null, _PluginInfo.Arguments.ToArray(),
 					global::System.Globalization.CultureInfo.CurrentCulture, null);
@@ -405,7 +134,7 @@ namespace ACT.Core.PluginManager
 						throw new TypeLoadException("Error Locating Class " + _PluginInfo.FullClassName + " -- In Dll: " + typeof(T).FullName, ex);
 					}
 
-					if (AddCachedAssembly(new Cached_Assembly(_PluginInfo.DllFullPath, _PluginInfo.DLLName, typeof(T).FullName))
+					if (AddCachedAssembly(new Cached_Assembly(_PluginInfo.DllFullPath, _PluginInfo.DLLName, typeof(T).FullName)))
 					{
 						var _CacheID = FindCachedAssembly(typeof(T));
 						_A = Cached_Assemblies.First(x => x.Assembly_CacheID == _CacheID).Loaded_Assembly;
@@ -447,7 +176,6 @@ namespace ACT.Core.PluginManager
 		///
 		/// <returns>	The specific. </returns>
 		////////////////////////////////////////////////////////////////////////////////////////////////////
-
 		public static T GetSpecific(Plugin_Arguments PluginInfo)
 		{
 
@@ -522,45 +250,11 @@ namespace ACT.Core.PluginManager
 			return (T)_TmpClass;
 		}
 
-		#endregion
+#endregion
 
 		#region Private Methods
 
-		////////////////////////////////////////////////////////////////////////////////////////////////////
-		/// <summary>	Adds the cached assembly. </summary>
-		///
-		/// <remarks>	Mark Alicz, 1/19/2024. </remarks>
-		///
-		/// <exception cref="ArgumentNullException">	Thrown when one or more required arguments are null. </exception>
-		///
-		/// <param name="AssemblyTooAdd">	The assembly too add. </param>
-		/// <param name="localPlugin">		True to local plugin. </param>
-		///
-		/// <returns>	Null if AssemblyToAdd is Null, True if Added, False if Not Added. </returns>
-		////////////////////////////////////////////////////////////////////////////////////////////////////
 
-		private static bool AddCachedAssembly(I_Cached_Assembly AssemblyTooAdd, bool localPlugin)
-		{
-			try
-			{
-				if (AssemblyTooAdd == null) { throw new ArgumentNullException("Parameter Must Not Be Null"); }
-				if (localPlugin == false)
-				{
-					if (CachedAssemblies.Exists(x => x.PluginName == AssemblyTooAdd.PluginName && x.Assembly_Types.Count == x.Assembly_Types.Count)) { return true; }
-				}
-				else
-				{
-					if (LocalCachedAssemblies.Exists(x => x.PluginName == AssemblyTooAdd.PluginName && x.Assembly_Types.Count == x.Assembly_Types.Count)) { return true; }
-				}
-			}
-			catch (Exception ex)
-			{
-				_ExceptionsCaught.Add("Error in private AddCachedAsembly(I_Cached_Assembly, bool)", ex);
-				return false;
-			}
-
-			return true;
-		}
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>	Loads all known paths. </summary>

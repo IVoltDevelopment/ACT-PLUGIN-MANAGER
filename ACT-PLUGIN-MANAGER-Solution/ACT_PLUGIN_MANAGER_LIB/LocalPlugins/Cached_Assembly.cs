@@ -1,6 +1,7 @@
 ﻿
 
 
+
 using ACT.Core.PluginManager.Extensions;
 using System.Reflection;
 using ACT.PluginManager.Interfaces;
@@ -41,6 +42,7 @@ namespace ACT.Core.PluginManager.LocalPlugins
 
 
 		#region Methods Start
+
 		////////////////////////////////////////////////////////////////////////////////////////////////////
 		/// <summary>	Initializes the plugin. </summary>
 		///
@@ -147,7 +149,13 @@ namespace ACT.Core.PluginManager.LocalPlugins
 			return _TmpReturn;
 		}
 
-		public string PluginInfo { get { return _PluginInfo; }; }
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+		/// <summary>	Gets information describing the plugin. </summary>
+		///
+		/// <value>	Information describing the plugin. </value>
+		////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		public string PluginInfo { get { return _PluginInfo; } }
 		#endregion
 
 		////////////////////////////////////////////////////////////////////////////////////////////////////

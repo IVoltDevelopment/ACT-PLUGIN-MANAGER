@@ -5,6 +5,7 @@
       {
          "interface": "ACT.PluginManager.Interfaces.I_Assembly_Loader",
          "dll_name": "ACT-PLUGIN-MANAGER-LOCALPLUGINS.dll",
+         "class_name": "MyPlugins.PluginManager.My_IAssembly_Loader",
          "version_increment": 20,
          "plugin_name": "IVolt_AssemblyLoader",
          "specific_path": "",

@@ -1,0 +1,19 @@
+{
+   "about": "View the SDK for more information on what Local Plugins are.",
+   "app_name": "IVolt Example Plugin Definition",
+   "interface_plugin_dlls": [
+      {
+         "interface": "ACT.PluginManager.Interfaces.I_Assembly_Loader",
+         "dll_name": "ACT-PLUGIN-MANAGER-LOCALPLUGINS.dll",
+         "version_increment": 20,
+         "plugin_name": "IVolt_AssemblyLoader",
+         "specific_path": "",
+         "priority": 1,
+         "continue_execution_chain": false,
+         "replace_core_code": false,
+         "arguments": [ "###APPLICATION_NAME###", "###FRAMEWORK###", "Mark Alicz" ],
+         "depends_on": [],
+         "enabled": false
+      }
+   ]
+}

@@ -1,0 +1,23 @@
+{
+   "about": "View the SDK for a comprehensive list of all Interface and interface paths",
+   "app_name": "IVolt Core Example",
+   "interface_plugin_dlls": [
+      {
+         "interface": "IVolt.Interfaces.I_HitSomething",
+         "dll_name": "customplugins.dll",
+         "version_increment": 20,
+         "plugin_name": "",
+         "specific_path": "",
+         "priority": 1,
+         "continue_execution_chain": true,
+         "replace_core_code": false,
+         "arguments": [ "###APPLICATION_NAME###", "###FRAMEWORK###", "Mark Alicz" ],
+         "depends_on": [
+            { "interface": "IVolt.Interfaces.I_HitSomething" },
+            { "dll_name": "customplugins.dll" },
+            { "version_increment_min": 16 }
+         ],
+         "enabled": false
+      }
+   ]
+}

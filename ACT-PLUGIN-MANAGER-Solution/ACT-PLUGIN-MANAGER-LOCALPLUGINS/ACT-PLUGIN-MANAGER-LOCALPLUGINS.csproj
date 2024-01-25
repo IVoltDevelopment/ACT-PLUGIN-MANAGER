@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <RootNamespace>ACT_PLUGIN_MANAGER_LOCALPLUGINS</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ACT_PluginManager_Interfaces\ACT_PluginManager_Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>

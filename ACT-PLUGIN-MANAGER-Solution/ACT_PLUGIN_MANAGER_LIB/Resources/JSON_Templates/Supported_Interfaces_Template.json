@@ -1,0 +1,21 @@
+{
+   "about": "Lists Out the Available Interfaces For Plugins",
+   "app_name": "IVolt Example",
+   "registered_app_id": "ZGVkOGMyOTctNmUyMy00YzQ1LTgwMjktNmQ1YjZiMGM0YmQx",
+   "interface_sources": [
+      {
+         "source_dll_name": "app_provided",
+         "interfaces": [
+            "IVolt.Interfaces.I_HitSomething",
+            "IVolt.Interfaces.I_HitSomething2"
+         ]
+      },
+      {
+         "source_dll_name": "act_core",
+         "interfaces": [
+            "ACT.Core.Interfaces.I_Execute",
+            "ACT.Core.Interfaces.I_ExecuteAdvanced"
+         ]
+      }
+   ]
+}

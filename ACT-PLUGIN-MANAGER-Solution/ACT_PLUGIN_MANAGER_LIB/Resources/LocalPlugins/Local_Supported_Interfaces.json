@@ -1,0 +1,14 @@
+{
+   "about": "Lists Out the Available Interfaces For The Plugin Manager",
+   "app_name": "IVolt Plugin Manager",
+   "registered_app_id": "ACT_PLUGIN_MANAGER",
+   "interface_sources": [
+      {
+         "source_dll_name": "ACT_PluginManager_Interfaces.dll",
+         "interfaces": [
+            "ACT.PluginManager.Interfaces.I_Assembly_Loader",
+            "ACT.PluginManager.Interfaces.I_Caches_Assembly"
+         ]
+      }
+   ]
+}

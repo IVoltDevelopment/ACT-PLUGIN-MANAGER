@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+ 
+  <PropertyGroup>
+     
+    <TargetFrameworks>net8.0;net7.0;net6.0;netstandard2.1</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>Disable</Nullable>
+    <RootNamespace>ACT.Core.PluginManager</RootNamespace>
+    <BaseOutputPath>C:\ACT\Releases\ACT_PLUGIN_MANAGER\Builds\$(Version)</BaseOutputPath>
+    <BaseIntermediateOutputPath>C:\ACT\Releases\ACT_PLUGIN_MANAGER\Obj\</BaseIntermediateOutputPath>
+    <AssemblyVersion>2.0.7.2</AssemblyVersion>
+    <FileVersion>2.0.7.2</FileVersion>
+  </PropertyGroup>
+
+ 
+  <ItemGroup>
+    <Compile Remove="obj\**" />
+    <EmbeddedResource Remove="obj\**" />
+    <None Remove="obj\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="System.IO.FileSystem" Version="4.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="LocalPlugins\Readme.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\JSON_Templates\Supported_Interfaces_Template.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\JSON_Templates\Interface_Plugins_Template.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\LocalPlugins\Local_Plugins.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\LocalPlugins\Local_Supported_Interfaces.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Plugins\Application_Plugins.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\Plugins\Supported_Interfaces.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Plugin_Implementations\" />
+    <Folder Include="Resources\Interfaces\UserDefined\" />
+    <Folder Include="Resources\Interfaces\PluginManager_self\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\.editorconfig" Link=".editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ACT_PluginManager_Interfaces\ACT_PluginManager_Interfaces.csproj" />
+  </ItemGroup>
+
+</Project>
